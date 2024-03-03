@@ -15,7 +15,7 @@ namespace Company.Function
     {
         [FunctionName("BlobTriggerCSharp1")]
         public static async Task Run(
-            [BlobTrigger("uploads/{name}.{extension}", Connection = "AzureWebJobsStorage_saizhv01")] Stream myBlob, 
+            [BlobTrigger("uploads/{name}.{extension}", Connection = "AzureWebJobsStorage_xxxx")] Stream myBlob, 
             string name, 
             string extension, 
             ILogger log)
