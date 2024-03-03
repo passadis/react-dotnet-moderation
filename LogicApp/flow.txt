@@ -1,0 +1,275 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "inputs": "@variables('Meta')",
+                "runAfter": {
+                    "For_each": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Compose"
+            },
+            "Create_CSV_table": {
+                "inputs": {
+                    "format": "CSV",
+                    "from": "@variables('csvData')"
+                },
+                "runAfter": {
+                    "csvData": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Table"
+            },
+            "Create_blob_(V2)": {
+                "inputs": {
+                    "body": "@body('Create_CSV_table')",
+                    "headers": {
+                        "ReadFileMetadataFromServer": true
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['azureblob']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('strmodapp01'))}/files",
+                    "queries": {
+                        "folderPath": "/content",
+                        "name": "csvdata.csv",
+                        "queryParametersSingleEncoded": true
+                    }
+                },
+                "runAfter": {
+                    "Update_blob_(V2)": [
+                        "Failed"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "For_each": {
+                "actions": {
+                    "ArrayString": {
+                        "inputs": {
+                            "name": "Meta",
+                            "value": {
+                                "Category": "@{outputs('Category')}",
+                                "Moderation": "@{outputs('Moderation')}"
+                            }
+                        },
+                        "runAfter": {
+                            "Moderation": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "AppendToArrayVariable"
+                    },
+                    "Category": {
+                        "inputs": "@outputs('HTTP')['headers']['x-ms-meta-Category']",
+                        "runAfter": {
+                            "HTTP": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "Compose"
+                    },
+                    "CategoryArray": {
+                        "inputs": {
+                            "name": "Array",
+                            "value": "@outputs('Category')"
+                        },
+                        "runAfter": {
+                            "ArrayString": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "AppendToArrayVariable"
+                    },
+                    "HTTP": {
+                        "inputs": {
+                            "headers": {
+                                "x-ms-date": "@{utcNow()}",
+                                "x-ms-version": "2020-06-12"
+                            },
+                            "method": "GET",
+                            "uri": "https://strmodapp01.blob.core.windows.net/uploads/@{items('For_each')?['Name']}?comp=metadata&sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-11-30T21:56:52Z&st=2023-11-19T13:56:52Z&spr=https&sig=S4PlM4MJc9SI9e0iD5HlhJPZL3DWkwdEi%2BBIzbpLyX4%3D"
+                        },
+                        "type": "Http"
+                    },
+                    "Moderation": {
+                        "inputs": "@outputs('HTTP')['Headers']['x-ms-meta-moderation_status']",
+                        "runAfter": {
+                            "Category": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "Compose"
+                    },
+                    "ModerationArray": {
+                        "inputs": {
+                            "name": "Array",
+                            "value": "@outputs('Moderation')"
+                        },
+                        "runAfter": {
+                            "CategoryArray": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "AppendToArrayVariable"
+                    }
+                },
+                "foreach": "@body('Lists_blobs_(V2)')?['value']",
+                "runAfter": {
+                    "Lists_blobs_(V2)": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Foreach"
+            },
+            "Initialize_variable": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Meta",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            },
+            "Initialize_variable_1": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Array",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Lists_blobs_(V2)": {
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['azureblob']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('strmodapp01'))}/foldersV2/@{encodeURIComponent(encodeURIComponent('JTJmdXBsb2Fkcw=='))}",
+                    "queries": {
+                        "nextPageMarker": "",
+                        "useFlatListing": true
+                    }
+                },
+                "metadata": {
+                    "JTJmdXBsb2Fkcw==": "/uploads"
+                },
+                "runAfter": {
+                    "Initialize_variable_1": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Update_blob_(V2)": {
+                "inputs": {
+                    "body": "@body('Create_CSV_table')",
+                    "headers": {
+                        "ReadFileMetadataFromServer": true
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['azureblob']['connectionId']"
+                        }
+                    },
+                    "method": "put",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('strmodapp01'))}/files/@{encodeURIComponent(encodeURIComponent('/content/csvdata.csv'))}"
+                },
+                "metadata": {
+                    "JTJmY29udGVudCUyZmNzdmRhdGEuY3N2": "/content/csvdata.csv"
+                },
+                "runAfter": {
+                    "Create_CSV_table": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "csvData": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "csvData",
+                            "type": "array",
+                            "value": "@outputs('Compose')"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "Recurrence": {
+                "evaluatedRecurrence": {
+                    "frequency": "Week",
+                    "interval": 1,
+                    "schedule": {
+                        "weekDays": [
+                            "Monday"
+                        ]
+                    },
+                    "timeZone": "GTB Standard Time"
+                },
+                "recurrence": {
+                    "frequency": "Week",
+                    "interval": 1,
+                    "schedule": {
+                        "weekDays": [
+                            "Monday"
+                        ]
+                    },
+                    "timeZone": "GTB Standard Time"
+                },
+                "type": "Recurrence"
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "value": {
+                "azureblob": {
+                    "connectionId": "/subscriptions/3de3893b-2d30-40fe-9d65-bf8710731f61/resourceGroups/rg-modapp/providers/Microsoft.Web/connections/azureblob",
+                    "connectionName": "azureblob",
+                    "connectionProperties": {
+                        "authentication": {
+                            "type": "ManagedServiceIdentity"
+                        }
+                    },
+                    "id": "/subscriptions/3de3893b-2d30-40fe-9d65-bf8710731f61/providers/Microsoft.Web/locations/westeurope/managedApis/azureblob"
+                }
+            }
+        }
+    }
+}
