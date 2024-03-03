@@ -35,7 +35,7 @@
                         }
                     },
                     "method": "post",
-                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('strmodapp01'))}/files",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('xxxxx'))}/files",
                     "queries": {
                         "folderPath": "/content",
                         "name": "csvdata.csv",
@@ -94,7 +94,7 @@
                                 "x-ms-version": "2020-06-12"
                             },
                             "method": "GET",
-                            "uri": "https://strmodapp01.blob.core.windows.net/uploads/@{items('For_each')?['Name']}?comp=metadata&sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-11-30T21:56:52Z&st=2023-11-19T13:56:52Z&spr=https&sig=S4PlM4MJc9SI9e0iD5HlhJPZL3DWkwdEi%2BBIzbpLyX4%3D"
+                            "uri": "https://xxxxxxxxxxx.blob.core.windows.net/uploads/@{items('For_each')?['Name']}xxxxxxxxxxxxxxxx"
                         },
                         "type": "Http"
                     },
@@ -192,7 +192,7 @@
                         }
                     },
                     "method": "put",
-                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('strmodapp01'))}/files/@{encodeURIComponent(encodeURIComponent('/content/csvdata.csv'))}"
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('xxxxxxxxxxxx'))}/files/@{encodeURIComponent(encodeURIComponent('/content/csvdata.csv'))}"
                 },
                 "metadata": {
                     "JTJmY29udGVudCUyZmNzdmRhdGEuY3N2": "/content/csvdata.csv"
@@ -260,14 +260,14 @@
         "$connections": {
             "value": {
                 "azureblob": {
-                    "connectionId": "/subscriptions/3de3893b-2d30-40fe-9d65-bf8710731f61/resourceGroups/rg-modapp/providers/Microsoft.Web/connections/azureblob",
+                    "connectionId": "/subscriptions/xxxxxxxxxxxx/resourceGroups/rg-group/providers/Microsoft.Web/connections/azureblob",
                     "connectionName": "azureblob",
                     "connectionProperties": {
                         "authentication": {
                             "type": "ManagedServiceIdentity"
                         }
                     },
-                    "id": "/subscriptions/3de3893b-2d30-40fe-9d65-bf8710731f61/providers/Microsoft.Web/locations/westeurope/managedApis/azureblob"
+                    "id": "/subscriptions/xxxxxxxxxxxxx/providers/Microsoft.Web/locations/westeurope/managedApis/azureblob"
                 }
             }
         }
