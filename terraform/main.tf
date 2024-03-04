@@ -149,30 +149,3 @@ resource "azurerm_windows_function_app" "funcapp" {
   }
 }
 
-
-
-/*
-# Create Azure Container App Environment
-resource "azurerm_container_app_environment" "acaenv" {
-  name                       = "mgmt-env-apps"
-  location                   = azurerm_resource_group.rgdemo.location
-  resource_group_name        = azurerm_resource_group.rgdemo.name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
-}
-
- Create Azure Container App
-resource "azurerm_container_app" "acapp" {
-  name                         = "react"
-  container_app_environment_id = azurerm_container_app_environment.acaenv.id
-  resource_group_name          = azurerm_resource_group.rgdemo.name
-  revision_mode                = "Single"
-
-  template {
-    container {
-      name   = "react"
-      image  = "azcont1.azurecr.io/frontend:v10"
-      cpu    = 1
-      memory = "2Gi"
-    }
-  }
-}*/
