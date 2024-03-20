@@ -43,3 +43,7 @@ For this workshop we need :
 ## Contribute
 
 We encourage contributions! If you have ideas on how to improve this application or want to report a bug, please feel free to open an issue or submit a pull request.
+
+## Architecture
+![ModArch3](https://github.com/passadis/react-dotnet-moderation/assets/53148138/8379e967-2791-486e-8d8e-caa63d77049d)
+
